@@ -1,0 +1,307 @@
+<meta name="replace" content=".home-connection">
+      
+<script>
+     var connectionData = {};
+     var argosClientUrl;
+     var connectionInfo;
+     
+
+     function collapse(e) {
+          const container = e.currentTarget.nextElementSibling;
+
+          container.classList.toggle("hidden");
+     }
+
+     function closeLogoutPopUp() {
+          const logoutPopup = document.body.getElementsByClassName('logoutRequest')[0];
+          document.body.removeChild(logoutPopup); 
+     }
+
+     function closePopUp(useDisabled) {
+          const item = document.body.getElementsByClassName('requestItem activeRequest')[0];
+          document.body.removeChild(item); 
+
+          if (useDisabled) {
+               const original = document.body.getElementsByClassName('requestExecuted')[0];
+               original.removeAttribute('disabled');
+          }
+     }
+     
+     function decrypt(encryptedText) {
+          return encrypt(encryptedText); 
+     }
+
+     function encrypt(textToEncript) {
+          const textCodes = textToEncript.split('').map(char => char.charCodeAt(0));
+          const seedCodes = '01ARGOSSERVER10!'.split('').map(char => char.charCodeAt(0));
+          const encryptedCodes = textCodes.map((code, index) => {
+               return code ^ seedCodes[index % seedCodes.length];
+          });
+
+          return String.fromCharCode(...encryptedCodes);
+     }
+  
+     async function executeARGOSLogoutConnection() {
+          const url = `${argosClientUrl}/argos-client/requestLogout`;
+          const dataToSend = {
+               requestId: encrypt(connectionData.requestId),
+               ticketId: encrypt(connectionData.ticketId),
+               userId: encrypt(connectionData.userId),
+               host: encrypt(`${location.protocol}//${location.hostname}`),
+               port: encrypt(`${location.port}`), 
+               dataSource: encrypt(connectionData.dataSource),
+               connectionId:  encrypt(connectionData.identifier)
+          }
+         
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          const requestOptions = {
+               method: "POST",
+               headers: myHeaders,
+               body: JSON.stringify(dataToSend),
+               redirect: "manual"
+          };
+
+          await fetch(url, requestOptions)
+               .then((response) => response.text())
+               .then((result) => console.debug(result))
+               .catch((error) => console.error(error));
+     }
+   
+     async function executeARGOSRequestConnection() {
+          const url = `${argosClientUrl}/argos-client/request`;
+          const dataToSend = {
+               requestId: encrypt(connectionData.requestId),
+               ticketId: encrypt(connectionData.ticketId),
+               userId: encrypt(connectionData.userId),
+               host: encrypt(`${location.protocol}//${location.hostname}`),
+               port: encrypt(`${location.port}`), 
+               dataSource: encrypt(connectionData.dataSource),
+               connectionId:  encrypt(connectionData.identifier)
+          }
+
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          const requestOptions = {
+               method: "POST",
+               headers: myHeaders,
+               body: JSON.stringify(dataToSend),
+               redirect: "manual"
+          };
+
+          await fetch(url, requestOptions)
+               .then((response) => response.text())
+               .then((result) => console.debug(result))
+               .catch((error) => console.error(error));
+     }
+
+     function executeLogOut() {
+          const mainContainer = document.body.getElementsByClassName('requestItem activeRequest')[0];
+          const logoutPopup = document.body.getElementsByClassName('requestExecuted')[0].parentElement.querySelector('.requestLogout').cloneNode(true);
+          document.body.appendChild(logoutPopup);
+    
+          logoutPopup.classList.remove('hidden');
+          logoutPopup.classList.add('logoutRequest');
+     }
+
+     async function executeLogOutValidation(event) {
+          await executeARGOSLogoutConnection();
+          closeLogoutPopUp();
+          toogleLogout();
+          await executeManageProxy(false);
+          const original = document.body.getElementsByClassName('requestExecuted')[0];
+          original.removeAttribute('disabled');
+     }
+
+     async function executeManageProxy() {
+
+     }
+
+     function executeRequestConnection(e) {
+          const requestDiv = e.currentTarget.nextElementSibling.cloneNode(true);
+          
+          document.body.appendChild(requestDiv);
+          requestDiv.classList.remove('hidden');
+          requestDiv.classList.add('activeRequest');
+          e.currentTarget.classList.add('requestExecuted');
+          e.currentTarget.setAttribute('disabled','');
+     }
+
+     async function executeRequestValidation(event) {
+          const mainContainer = document.body.getElementsByClassName('requestItem activeRequest')[0];
+          const formContainer = mainContainer.querySelector('.form');
+          formContainer.classList.add('hidden');
+
+          const requestDiv = mainContainer.querySelector('.prepareConnection');
+          requestDiv.classList.remove('hidden');
+
+          const data = JSON.parse(mainContainer.getAttribute('data'));
+          data.requestId = `${location.hostname}_${(new Date).getTime()}`,
+          data.ticketId = mainContainer.querySelector('form').querySelector('#ticketId').value;
+          data.userId = document.body.getElementsByClassName('menu-title')[0].innerText;
+          connectionData = data;
+
+          await executeManageProxy(true);
+          argosClientUrl = `http://${connectionData.wrappedItem.attributes['guacd-hostname']}:${connectionData.wrappedItem.attributes['guacd-port']}`;
+          const connectionMachine = mainContainer.getAttribute('link');
+     
+          await executeARGOSRequestConnection();
+          const status = await requestStatus();
+         
+          if (status) {
+               window.open(connectionMachine);
+               closePopUp(false);
+               toogleLogout();
+          } else {
+               showErrorContainer(requestDiv);
+          }
+     }
+
+     async function executeManageProxy(deleteProxy) {
+          let token = JSON.parse(localStorage.getItem('GUAC_AUTH'));
+          let newProxy;
+          if (deleteProxy) {
+               response = await fetch(`api/session/data/${connectionData.dataSource}/connections/${connectionData.identifier}?token=${token.authToken}`);
+               connectionInfo = await response.json();
+          
+               response = await fetch(`api/session/data/${connectionData.dataSource}/connections/${connectionData.identifier}/parameters?token=${token.authToken}`);
+               connectionInfo.parameters = await response.json();
+          
+               newProxy = {...connectionInfo};
+               newProxy.attributes['guacd-hostname'] = "";
+               newProxy.attributes['guacd-port'] = "";
+          } else {
+               newProxy = {...connectionInfo};
+          }
+     
+          const url = `api/session/data/${connectionData.dataSource}/connections/${connectionData.identifier}?token=${token.authToken}`;
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          const requestOptions = {
+               method: "PUT",
+               headers: myHeaders,
+               body: JSON.stringify(newProxy),
+               redirect: "manual"
+          };
+
+          await fetch(url, requestOptions)
+               .then((response) => response.text())
+               .then((result) => console.debug(result))
+               .catch((error) => console.error(error));
+     }
+
+     async function requestStatus() {
+          const sleepTime = 1000;
+          const url = `${argosClientUrl}/argos-client/status/${connectionData.requestId}`;
+      
+          try {
+               let i = 0
+               let response;
+               let responseData;
+               let isReady = true;
+          do {
+               response = await fetch(url);
+               responseData = await response.json();
+
+               if (responseData.status !== "READY") {
+                    i = i+1;
+                    if (i == 30) {
+                         isReady = false;
+                         break;
+                    } else if (responseData.status === 'ERROR') {
+                         isReady = false;
+                         break;
+                    } else {
+                         await new Promise(resolve => setTimeout(resolve, sleepTime));
+                    }
+               }
+          } while (responseData.status !== "READY");
+
+          return isReady;
+
+          } catch (error) {
+               return false;
+          }
+     }
+    
+     function showErrorContainer(requestDiv) {
+          const errorContainer = requestDiv.parentElement.querySelector('.errorContainer');
+          
+          requestDiv.classList.add('hidden');
+          errorContainer.classList.remove('hidden');
+
+          const header = document.body.getElementsByClassName('requestItem activeRequest')[0].querySelector('h3');
+          header.classList.add('errorTitle');
+     }
+
+     function toogleLogout() {
+          const logoutButton = document.body.getElementsByClassName('requestExecuted')[0].parentElement.querySelector('.logout');
+          
+          if (logoutButton.hasAttribute('disabled')) {
+               logoutButton.removeAttribute('disabled');
+          } else {
+               logoutButton.setAttribute('disabled', '');
+          }
+     }
+</script>
+
+<div class="home-connection">
+     <div class="title-connection" onclick="collapse(event)">
+          <div class="icon type" ng-class="item.protocol"></div>
+          <div class="name">{{item.name}}</div>
+     </div>
+     <div class="hidden">
+          <div class="requestNotification" translate="APP.CONNECTION_WARNING"></div>
+          <div class="requestButton">
+               <button onclick="executeRequestConnection(event)" translate="APP.EXECUTE_REQUEST"></button>
+               <div data="{{item}}" link="{{item.getClientURL()}}" class="requestItem hidden">
+                    <div class="container">
+                         <h3 translate="APP.CONNECTION_REQUEST_TITLE"></h3>
+                         <div class="wrapper">
+                              <div class="form">
+                                   <form>
+                                        <div class="extraInfo" translate="APP.CONNECTION_REQUEST_EXTRA_INFO"></div>
+                                        <label for="ticketId" translate="APP.CONNECTION_REQUEST_TICKET"></label><br>
+                                        <input type="text" id="ticketId" name="ticketId" required placeholder="ARGOS-XXX"><br>
+                                   </form>
+                                   <div class="controls">
+                                        <button onclick="closePopUp(true)" translate="APP.CANCEL"></button>
+                                        <button onclick="executeRequestValidation(event)" translate="APP.SEND"></button>
+                                   </div>
+                              </div>
+                              <div class="prepareConnection hidden">
+                                   <div class="extraInfo" translate="APP.CONNECTION_REQUEST_MESSAGE"></div>
+                                   <div class="extraInfo" translate="APP.CONNECTION_REQUEST_MESSAGE2"></div>
+                                   <div class="controls">
+                                        <button onclick="closePopUp(true)" translate="APP.CANCEL"></button>
+                                   </div>
+                              </div>
+                              <div class="errorContainer hidden">
+                                   <div class="extraInfo" translate="APP.CONNECTION_REQUEST_ERROR"></div>
+                                   <div class="controls">
+                                        <button onclick="closePopUp(true)" translate="APP.CLOSE"></button>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+               <button class="logout" disabled onclick="executeLogOut(event)" translate="APP.EXECUTE_LOGOUT"></button>
+               <div class="requestLogout hidden">
+                    <div class="container">
+                         <h3 translate="APP.CONNECTION_REQUEST_TITLE"></h3>
+                         <div class="wrapper">                       
+                              <div class="extraInfo" translate="APP.CONNECTION_LOGOUT_MESSAGE"></div>
+                              <div class="controls">
+                                   <button onclick="closeLogoutPopUp()" translate="APP.CANCEL"></button>
+                                   <button onclick="executeLogOutValidation(event)" translate="APP.SEND"></button>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+

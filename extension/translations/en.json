@@ -1,0 +1,20 @@
+{
+  "NAME" : "English",
+  "APP":{
+    "CANCEL": "Cancel",
+    "CLOSE": "Close",
+    "CONNECTION_LOGOUT_MESSAGE": "Are you sure that you want to send logout request?",
+    "CONNECTION_REQUEST_ERROR": "Error: ARGOS client returns an unexpected error, please contact with the administrator.",
+    "CONNECTION_REQUEST_EXTRA_INFO": "Please, set the ticket Id related with this connection request.",
+    "CONNECTION_REQUEST_MESSAGE": "Your connection request is processing by ARGOS client.",
+    "CONNECTION_REQUEST_MESSAGE2": "Please, wait until your connection is ready and the connection will be opened automatically.",
+    "CONNECTION_REQUEST_TICKET": "Ticket*:",
+    "CONNECTION_REQUEST_TITLE": "ARGOS Request connection",
+    "CONNECTION_WARNING": "If you want to work with this machine, please request a connection.",
+    "EXECUTE_LOGOUT": "Request logout",
+    "EXECUTE_REQUEST": "Request login",
+    "LICENSE": "This project is licensed under the MIT License.",    
+    "NAME" : "ARGOS Server" ,
+    "SEND": "Send"
+	}
+}

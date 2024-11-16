@@ -1,0 +1,191 @@
+
+body {
+    --main-color: #4CAF50;
+    --dark-shade: #388E3C;
+    --light-shade: #81C784;
+    --accent-color: #FFC107;
+    --neutral-color: #FFF8EF;
+    --main-footer: #333;
+    --default-background: #FFFFFF;
+    --error-color: rgba(112, 9, 8, .75);
+    font-family: 'Open Sans';
+    background-color: var(--default-background);
+ }
+
+.header {
+    background-color: var(--light-shade);
+    color: var(--default-background);
+}
+
+.navigation {
+    position: fixed;
+    display: flex;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    width: 100%;
+    height: 60px;
+    background-color: var(--main-color);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+}
+
+.navigation .hlogo {
+    background: black url(app/ext/ARGOS/resources/images/logo.jpg) no-repeat;
+    background-size: 100px 60px;
+    font-size: 0;
+    height: 60px;
+    line-height: 0;
+    width: 100px;
+}
+
+.navigation .title {
+    color: var(--default-background);
+    width: calc(100% - 100px);
+}
+
+.footer {
+    align-items: center;
+    background-color: var(--main-footer);
+    bottom: 0;
+    color: var(--default-background);
+    display: flex;
+    height: 40px;
+    justify-content: flex-end;
+    left: 0;
+    padding-right: 20px;
+    position: fixed;
+    right: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+/**
+ * Changes the font of the login dialog to prefer Raleway, with some fallbacks.
+ */
+ .login-ui .login-dialog .login-fields input {
+    font-family: 'Open Sans'
+}
+
+/**
+ * Set up the logo used at the top of the login dialog box, including sizing it
+ * appropriately and pulling in the custom image.
+ */
+.login-ui .login-dialog .logo {
+    width: 5em;
+    height: 3em;
+    background-size:         5em 3em;
+    -moz-background-size:    5em 3em;
+    -webkit-background-size: 5em 3em;
+    -khtml-background-size:  5em 3em;
+    background-image: url('app/ext/ARGOS/resources/images/logo.jpg');
+}
+
+
+input[type="submit"], button, a.button {
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    height: 40px;
+    background-color: var(--main-color);
+    padding-top: 8px;
+}
+
+input[type="submit"]:hover, button:hover:enabled, a.button:hover:enabled {
+    background-color: var(--dark-shade);
+    color: var(--default-background);
+}
+
+.menu-title {
+    color: #000000;
+}
+
+.home-connection .title-connection {
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+}
+.home-connection .requestNotification {
+    color: var(--dark-shade);
+    font-size: 16px;
+    margin: 10px 20px;
+}
+.home-connection .requestButton {
+    display: flex;
+    gap: 70px;
+    justify-content: center;
+    width: 100%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.requestItem,
+.requestLogout {
+    background-color: #333;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    width: 100%;
+    left: 0;
+    z-index: 10;
+}
+
+.requestItem .container,
+.requestLogout .container {
+    position: relative;
+    background-color: var(--default-background);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
+    border-radius: 10px;
+    top: 25%;
+    min-width: 33%;
+    max-width: 450px;
+    left: 33%;
+    height: 40%;
+    max-height: 400px;
+}
+
+.requestItem .container h3,
+.requestLogout .container h3 {
+    background-color: var(--dark-shade);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 40px;
+    padding: 10px 20px;
+    color: var(--default-background);
+}
+
+.requestItem .container .wrapper,
+.requestLogout .container .wrapper {
+    padding: 10px 20px;
+}
+
+.requestItem .container .wrapper .extraInfo,
+.requestLogout .container .wrapper .extraInfo {
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.requestItem .container .controls,
+.requestLogout .container .controls {
+    align-items: center;
+    bottom: 10px;
+    border-top: 1px solid var(--dark-shade);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    left: 0px;
+    padding: 5px 10px;
+    position: absolute;
+    width: 100%;
+}
+
+.errorTitle {
+    background-color: var(--error-color) !important;
+}

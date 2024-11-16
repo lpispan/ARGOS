@@ -1,0 +1,24 @@
+{
+    "guacamoleVersion" : "*",
+    "name"             : "ARGOS",
+    "namespace"        : "ARGOS",
+    
+    "css" : [
+        "css/argos.css"
+    ],
+    
+    "html" : [
+        "html/footer.html",
+        "html/header.html",
+	    "html/connection.html"
+    ],
+    
+    "resources" : {
+        "resources/images/logo.jpg" : "image/jpg"
+    },
+    
+    "translations" : [
+        "translations/en.json",
+        "translations/es.json"
+    ]
+}

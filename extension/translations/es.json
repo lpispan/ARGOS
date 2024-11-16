@@ -1,0 +1,20 @@
+{
+  "NAME" : "Spanish",
+  "APP":{
+    "CANCEL": "Cancelar",
+    "CLOSE": "Cerrar",
+    "CONNECTION_LOGOUT_MESSAGE": "¿Está seguro quer desea ejecutar una petición de deslogueo?",
+    "CONNECTION_REQUEST_ERROR": "Error: ARGOS cliente ha retornado un error inesperado, por favor contacte con el administrador de la máquina.",
+    "CONNECTION_REQUEST_EXTRA_INFO": "Por favor, indique el ticket relacionado con la petición de conexión.",
+    "CONNECTION_REQUEST_MESSAGE": "Su petición de conexión se está procesando por ARGOS cliente.",
+    "CONNECTION_REQUEST_MESSAGE2": "Por favor, espere hasta que la conexión esté lista para trabajar y automáticamente será abierta.",
+    "CONNECTION_REQUEST_TICKET": "Ticket*:",
+    "CONNECTION_REQUEST_TITLE": "Petición de conexión de ARGOS",
+    "CONNECTION_WARNING": "Si usted desea trabajar con esta máquina, por favor solicite una conexión.",
+    "EXECUTE_LOGOUT": "Solicitar deslogueo",
+    "EXECUTE_REQUEST": "Solicitar logueo",
+    "LICENSE": "Este proyecto está licenciado bajo la licencia MIT.",    
+    "NAME" : "ARGOS Server" ,
+    "SEND": "Enviar"
+	}
+}
